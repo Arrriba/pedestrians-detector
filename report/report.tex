@@ -33,6 +33,7 @@
 \usepackage{url}
 \usepackage{verbatim}
 \usepackage{xcolor}
+\usepackage[outdir=./]{epstopdf}
 
 \geometry{a4paper,top=3cm,left=2cm,right=2cm,bottom=3cm}
 
@@ -172,25 +173,29 @@ There are a lot of people out there dreaming about how the future will look like
 \section{Paper structure and original contribution(s)}
 \label{section:structure}
 
-The research presented in this paper advances the theory, design, and implementation of several particular models. 
+The research presented in this paper is focused on outlining the theory behind the TinyYoloV3 model and employing it for the particular problem of pedestrian detection in different contexts.
 
-The main contribution of this report is to present an intelligent algorithm for solving the problem of $\ldots$.
+The main contribution of this report is to present a solution based on an intelligent classifier consisting of a pre-trained model which is run against multiple sets of data in the aim of solving the problem of pedestrian, vehicle and road sign detection.
 
-The second contribution of this report consists of building an intuitive, easy-to-use and user
-friendly software application. Our aim is to build an algorithm that will help $\ldots$.
+The second contribution of this report is the development of a simple and intuitive mobile application that will present a practical user interface through which the user can easily test the algorithm results on input of their own.
 
-The third contribution of this thesis consists of $\ldots$.
+The third contribution of this thesis consists of the employment of a number of optimizations with a view to increasing the overall accuracy of the algorithm and testing its performance in different scenarios.
 
+The work is structured in seven chapters as follows: 
 
-The present work contains $xyz$ bibliographical references and is structured in five chapters as follows.
+The first chapter is a short introduction in the subject of object detection in the driving assistance field, what it is about and why it is important and our reasons that were behind choosing this topic. 
 
-The first chapter/section is a short introduction in $\ldots$.
+The second chapter describes the scientific problem in more detai and considers the advantages and disadvantages of our aproachl.
 
-The second chapter/section describes $\ldots$.
+The third chapter treats some other related work in the field and gives a brief description of their results.
 
-The chapter/section \ref{chapter:proposedApproach} details $\ldots$.
+In chapter four we provide the investigate approach, togheter with the tools and technologies that were used in order to implement it. We describe the underlying architecture of the TinyYoloV3 model and the algorithm employed by it, stating how we will use this for our problem and how it is suited for the driving assistance object of study. We show how the algorithm works in practice and provide a short list of the tools we will be using for our study.
 
+Chapter five comprises the main part of this report and consists of the description of our application requirements, the methodology by which we plan to solve the problem, the datasets we will be conducting our experiments on and the results obtained in the end. At the end of the chapter, we also provide some discussion around the results and potential optimizations to the algorithm, comparing the results obtained with the initial ones. The chapter ends with a small presentation of the user interface.
 
+Chapter 6 explains the experimental methodology and the numerical results obtained with our approach and the state of the art approaches. Our focus in this chapter is on the interpretation and the statistical validation of the results. Also, this chapter is a dive into the philosophical aspects of autonomous driving and how this is likely to affect the way in which we report ourselves to the task of driving in general. We analyze the objectivity of the solution proposed and raise some interesting questions relating to the ethics of the smart driving assistants in general. We also provide some interesting data about the way our algorithm performs on individuals of different races and ethnicities, by this trying to advance the idea of diversity and inclusion in the way we use such technology.
+
+The last chapter offers a summarization of our conclusions and future work and also try to analyze the strenghts and weaknesses of our application with the focus on what we can improve bpth in the algorithm and the application.
 
 \chapter{Scientific Problem}
 \label{section:scientificProblem}
@@ -199,11 +204,33 @@ The chapter/section \ref{chapter:proposedApproach} details $\ldots$.
 \section{Problem definition}
 \label{section:problemDefinition}
 
-Give a description of the problem.
-Explain why it must be solved by an intelligent algorithm. 
-Details the advantages and/or disadvantages of solving the problem by a (some) given method(s).
+The issue of road obstacle detection has been tended by many major car manufacturers, integrating them in modern car models in order to improve crash avoidance technology and increase confidence in their cars. In any case, most of most of these frameworks report destitute comes about in severely lit situations and are frequently flawed in their discovery processes.
 
-Precisely define the problem you are addressing (i.e. formally specify the inputs and outputs). Elaborate on why this is an interesting and important problem.
+The point of this paper is to show a implies of identifying people on foot in any kind of conditions and tie this to the current climate state to propose to the client the foremost suitable activities to be taken in certain activity circumstances or to respond naturally to them (further improvement).
+
+The personal driving assistant would be built off an intelligent classification algorithm based on neural networks. Other methods used for obstacle detection include:
+\begin{itemize}
+	\item template matching approach - the real image is compared against a sufficient number of templates of the object-of-interest to identify the presence of the object in the sample image.
+\end{itemize}
+
+\textbf{\emph{Why an intelligent algorithm is more suitable for this?}} - The shape of the pedestrian, for example, is rarely predictable, it may be moving or standing, may differ in color or position, creating endless possibilities of representation. Thus, we need a more complex system of identifying such obstacles. The two main options are:
+
+\begin{itemize}
+	\item Feature Classifier approach - a classifier based on predefined features
+	\item Deep Learning approach - a classifier with self learned features
+\end{itemize}
+
+We will be using the Deep Learning approach. Our classifier will receive as input the image or video sequence and output the same image, with the obstacles marked and delimited accordingly. This should provide a good start for further improvements and additional features that would contribute to a better navigation experience in autonomous driving.
+
+\section{Challenges}
+
+The challenges we have faced in putting together an algorithm that would help us achieve this goal are related to the specific use case of working with pre-trained models. The models themselves are pretty large in size and take up a great deal of resources to run. 
+
+In trying to work with a model that is pre-trained, we have had little control over the time it takes the algorithm to do a detection. Much of effort was concentrated on trying to make the algorithm run faster and get a better accuracy with the amount of resources that we have had at our disposal. 
+
+Lack of sufficient resources to run the algorithm was an imminent problem that we have come across, as well as the deployment part, where we have found it is difficult to deploy our app in the cloud due to lack of free options for dedicated GPU servers.
+
+We have also placed a lot of focus on developing a "Diversity and inclusion" part, in which we try to compare the results the algorithm yields on people from different races compared to white people and how this could make our algorithm biased in terms of inclusion and multi-cultural coverage. This proved to be quite a challenging task, especially for arab women, where the algorithm would often fail to perform well at all.
 
 
 
@@ -307,7 +334,7 @@ Figure example
 $\ldots$ (see Figure \ref{swarmsize})
 
 \begin{figure}[htbp]
-	\centerline{\includegraphics{Fig/FitEvol.eps}}  
+% 	\centerline{\includegraphics{Fig/FitEvol.eps}}  
 	\caption{The evolution of the swarm size during the GA generations. This results were obtained for the $f_2$ test function with 5 dimensions.}
 	\label{swarmsize}
 \end{figure}
