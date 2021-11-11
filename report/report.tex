@@ -204,34 +204,29 @@ The last chapter offers a summarization of our conclusions and future work and a
 \section{Problem definition}
 \label{section:problemDefinition}
 
-The issue of road obstacle detection has been tended by many major car manufacturers, integrating them in modern car models in order to improve crash avoidance technology and increase confidence in their cars. In any case, most of most of these frameworks report destitute comes about in severely lit situations and are frequently flawed in their discovery processes.
 
-The point of this paper is to show a implies of identifying people on foot in any kind of conditions and tie this to the current climate state to propose to the client the foremost suitable activities to be taken in certain activity circumstances or to respond naturally to them (further improvement).
+Advanced driver-assistance systems (ADAS) are groups of electronic technologies that assist drivers in driving and parking functions. Through a safe human-machine interface, ADAS increase car and road safety. ADAS use automated technology, such as sensors and cameras, to detect nearby obstacles or driver errors, and respond accordingly.
+
+As most road accidents occur due to human error, ADAS are developed to automate, adapt, and enhance vehicle technology for safety and better driving. ADAS are proven to reduce road fatalities by minimizing human error. Safety features are designed to avoid accidents and collisions by offering technologies that alert the driver to problems, implementing safeguards, and taking control of the vehicle if necessary. Adaptive features may automate lighting, provide adaptive cruise control, assist in avoiding collisions, incorporate satellite navigation and traffic warnings, alert drivers to possible obstacles, assist in lane departure and lane centering, provide navigational assistance through smartphones, and provide other features.
+
+The point of this paper is to show a implies of identifying people on foot in any kind of conditions and tie this to the current climate state to propose to the client the foremost suitable activities to be taken in certain activity circumstances or to respond naturally to them.
+
+The main advantage of an artificial intelligent algorithm is its ability to analyse and employ an enormous quantity of data, much more efficiently than possible for humans through classical statistical analyses. Moreover, the more data received, the more accurate the result will be.
 
 The personal driving assistant would be built off an intelligent classification algorithm based on neural networks. Other methods used for obstacle detection include:
 \begin{itemize}
 	\item template matching approach - the real image is compared against a sufficient number of templates of the object-of-interest to identify the presence of the object in the sample image.
 \end{itemize}
 
-\textbf{\emph{Why an intelligent algorithm is more suitable for this?}} - The shape of the pedestrian, for example, is rarely predictable, it may be moving or standing, may differ in color or position, creating endless possibilities of representation. Thus, we need a more complex system of identifying such obstacles. The two main options are:
-
-\begin{itemize}
-	\item Feature Classifier approach - a classifier based on predefined features
-	\item Deep Learning approach - a classifier with self learned features
-\end{itemize}
-
 We will be using the Deep Learning approach. Our classifier will receive as input the image or video sequence and output the same image, with the obstacles marked and delimited accordingly. This should provide a good start for further improvements and additional features that would contribute to a better navigation experience in autonomous driving.
+
+On the other hand, processing image with people is a challenge even for an intelligent algorithm. Most of the images may be difficult to read an interpret, which means that large sets of data with labeled images are required for the algorithm to work properly. Machines are still having a hard time understanding images with people and using certain unclear images can be misleading for the AI, that can provide erroneous or implausible detections.
 
 \section{Challenges}
 
-The challenges we have faced in putting together an algorithm that would help us achieve this goal are related to the specific use case of working with pre-trained models. The models themselves are pretty large in size and take up a great deal of resources to run. 
+Much of effort was concentrated on trying to make the algorithm run faster and get a better accuracy with the amount of resources that we have had at our disposal. In trying to work with a model that is pre-trained, we have had little control over the time it takes the algorithm to do a detection. The models themselves are pretty large in size and take up a great deal of resources to run. 
 
-In trying to work with a model that is pre-trained, we have had little control over the time it takes the algorithm to do a detection. Much of effort was concentrated on trying to make the algorithm run faster and get a better accuracy with the amount of resources that we have had at our disposal. 
-
-Lack of sufficient resources to run the algorithm was an imminent problem that we have come across, as well as the deployment part, where we have found it is difficult to deploy our app in the cloud due to lack of free options for dedicated GPU servers.
-
-We have also placed a lot of focus on developing a "Diversity and inclusion" part, in which we try to compare the results the algorithm yields on people from different races compared to white people and how this could make our algorithm biased in terms of inclusion and multi-cultural coverage. This proved to be quite a challenging task, especially for arab women, where the algorithm would often fail to perform well at all.
-
+Lack of sufficient resources to run the algorithm was an imminent problem that we have come across.
 
 
 
