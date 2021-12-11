@@ -33,7 +33,7 @@
 \usepackage{url}
 \usepackage{verbatim}
 \usepackage{xcolor}
-\usepackage[outdir=./]{epstopdf}
+\usepackage{listings}
 
 \geometry{a4paper,top=3cm,left=2cm,right=2cm,bottom=3cm}
 
@@ -41,7 +41,7 @@
 \fancyhf{}
 \fancyhead[LE,RO]{Pedestrians Detector}
 \fancyhead[RE,LO]{Team's name}
-\fancyfoot[RE,LO]{MIRPR 2020-2021}
+\fancyfoot[RE,LO]{ITSG 2021-2022}
 \fancyfoot[LE,RO]{\thepage}
 
 \renewcommand{\headrulewidth}{2pt}
@@ -195,7 +195,9 @@ Chapter five comprises the main part of this report and consists of the descript
 
 Chapter 6 explains the experimental methodology and the numerical results obtained with our approach and the state of the art approaches. Our focus in this chapter is on the interpretation and the statistical validation of the results. Also, this chapter is a dive into the philosophical aspects of autonomous driving and how this is likely to affect the way in which we report ourselves to the task of driving in general. We analyze the objectivity of the solution proposed and raise some interesting questions relating to the ethics of the smart driving assistants in general. We also provide some interesting data about the way our algorithm performs on individuals of different races and ethnicities, by this trying to advance the idea of diversity and inclusion in the way we use such technology.
 
-The last chapter offers a summarization of our conclusions and future work and also try to analyze the strenghts and weaknesses of our application with the focus on what we can improve bpth in the algorithm and the application.
+The last chapter offers a summarization of our conclusions and future work and also try to analyze the strenghts and weaknesses of our application with the focus on what we can improve both in the algorithm and the application.
+
+
 
 \chapter{Scientific Problem}
 \label{section:scientificProblem}
@@ -203,7 +205,6 @@ The last chapter offers a summarization of our conclusions and future work and a
 
 \section{Problem definition}
 \label{section:problemDefinition}
-
 
 Advanced driver-assistance systems (ADAS) are groups of electronic technologies that assist drivers in driving and parking functions. Through a safe human-machine interface, ADAS increase car and road safety. ADAS use automated technology, such as sensors and cameras, to detect nearby obstacles or driver errors, and respond accordingly.
 
@@ -250,10 +251,110 @@ In order to cite a given work you can use a bib file (see the example) and the $
 
 \chapter{Investigated approach}
 \label{chapter:proposedApproach}
+\section{Motivation}
+\label{section:motivation}
 
-Describe your approach!
+There are a lot of documented ways of implementing object detection nowadays, and most of them are written in Python. Why is this the most popular language for AI and ML based projects? Because it offers a great library ecosystem. Libraries provide base level items so developers don't have to code them from the beginning every time.
+(https://djangostars.com/blog/why-python-is-good-for-artificial-intelligence-and-machine-learning/)
 
-Describe in reasonable detail the algorithm you are using to address this problem. A psuedocode description of the algorithm you are using is frequently useful. Trace through a concrete example, showing how your algorithm processes this example. The example should be complex enough to illustrate all of the important aspects of the problem but simple enough to be easily understood. If possible, an intuitively meaningful example is better than one with meaningless symbols.
+TensorFlow is a free and open-source library for machine learning and artificial intelligence. It can be used across a range of tasks but has a particular focus on training and inference of deep neural networks. It uses Python to provide a convenient front-end API for building applications, while executing those applications in high-performance C++. This is the core library that is used in this project, with a twist that will be revealed in the second experiment.
+
+\section{First Experiment}
+\label{section:firstExperiment}
+
+We first started by implementing a mobile application with a regular client-server model. The server was written in Python with a Flask RESTful API. The client side is implemented in React Native and has to send the photo to the server and then wait for the detection. 
+
+TODO
+
+\section{Second Experiment}
+\label{section:secondExperiment}
+
+As fast detection is a vital aspect in automotive, and since we are driving towards a real-time experience, an almost instant response would be desirable. 
+
+Reducing the response time as much as
+possible is the main reason for switching to another perspective: TensorFlow for JavaScript. It is designed as a breakthrough for running entirely client-sided machine learning models. And it is exactly what we needed to get rid of the client-server communication overhead, bringing us a few steps closer to real-time detection.
+
+TensorFlow.js offers a set of pre-trained models that have been ported from the "pythonic" version of Tensorflow Object Detection API - an open source framework built on top of TensorFlow that makes it easy to construct, train and deploy object detection models. We will be using the object detection model: COCO-SSD. 
+
+https://github.com/tensorflow/models/blob/master/research/object\textunderscore detection/README.md
+
+
+\subsection{The Model - overview}
+\label{section:theModelOverview}
+
+COCO-SSD is an object detection model that aims to localize and identify multiple objects in a single image. This model detects objects defined in the COCO dataset, which is a large-scale object detection, segmentation, and captioning dataset. More detailed information about the data can be found in Chapter 5, the Data section. 
+
+https://github.com/tensorflow/tfjs-models/tree/master/coco-ssd
+
+SSD stands for Single Shot MultiBox Detection, as the model is capable of detecting 80 classes of objects (from person, vehicles, traffic light, stop signs to elephants and bananas). It can take as input any browser-based image elements (<img>, <video>, <canvas> elements, for example), returning an array of bounding boxes with class name and confidence level. SSD is a neural network architecture made of a single feed-forward convolutional neural network that predicts the image's objects labels and their position during the same action. The counterpart of this "single-shot" characteristic is an architecture that uses a "proposal generator," a component whose purpose is to search for regions of interest within an image.
+
+Once the regions of interests have been identified, the second step is to extract the visual features of these regions and determine which objects are present in them, a process known as "feature extraction." COCO-SSD default's feature extractor is lite\textunderscore mobilenet\textunderscore v2, an extractor based on the MobileNet architecture. In general, MobileNet is designed for low resources devices, such as mobile, single-board computers, e.g., Raspberry Pi, and even drones.
+
+\subsection{Mobile Integration}
+\label{section:mobileIntegration}
+
+The React Native mobile app has to be created with Expo because the React Native CLI method raises a lot of compatibility issues and version constraints between TensorFlow.js and other packages. Moreover, the linking has to be done manually without Expo, which can lead to more complicated environmental errors. 
+
+
+After setting up the Expo project so that it has TensorFlow.js properly installed, the model can be "installed" to the mobile app by running the following command:
+
+\begin{lstlisting}[language=bash]
+    $ npm install @tensorflow-models/coco-ssd
+\end{lstlisting}
+There are three main steps for making a prediction:
+\begin{enumerate}
+  \item \textbf{import} model
+  \begin{lstlisting}
+    import * as cocossd from "@tensorflow-models/coco-ssd";
+  \end{lstlisting}
+  \item \textbf{load} model
+  \begin{lstlisting}
+    const model = await cocossd.load();
+  \end{lstlisting}
+  \item \textbf{detect} image
+  \begin{lstlisting}
+    const predictions = await model.detect(img);
+  \end{lstlisting}
+\end{enumerate}
+At \textbf{load}, the developer is able to specify certain configurations for the model. The documentation provides the following ModelConfig interface: 
+    \begin{lstlisting}
+    export interface ModelConfig {
+      base?: ObjectDetectionBaseModel;
+      modelUrl?: string;
+    }
+    \end{lstlisting}
+The \textbf{base} attribute controls the base CNN model, which can be one of the following:
+\begin{itemize}
+  \item 'mobilenet\textunderscore v1' 
+  \item 'mobilenet\textunderscore v2' - has the highest classification accuracy
+  \item 'lite\textunderscore mobilenet\textunderscore v1' - \textit{default}, is the smallest in size and the fastest in inference speed. Since we are keen on achieving the fastest possible results, we will be using this as the base model.
+\end{itemize}
+
+For the \textbf{detection} part, we are passing as a parameter the image converted to a Tensor. A Tensor is a container which can hold data in multiple dimensions. This method can also receive the image in different shapes, such as html elements: ImageData, HTMLImageElement, HTMLCanvasElement, HTMLVideoElement. It provides two more optional parameters: maxNumBoxes and minScore. Thus, the \textbf{detect} function can have the following arguments:
+\begin{itemize}
+  \item \textbf{img}: either Tensor or html element to perform the detection on.
+  \item \textbf{maxNumBoxes}: the maximum number of bounding boxes of detected objects. There can be multiple detections of the same class, but at different locations. Default: 20.
+  \item \textbf{minScore}: The minimum level of confidence for returning detections. It can be a value between 0 and 1, default: 0.5. 
+\end{itemize}
+
+The \textbf{output} is an array of objects. An object contains the bounding box parameters, the class and the score: 
+
+\begin{lstlisting}
+    [{
+      bbox: [x, y, width, height],
+      class: "person",
+      score: 0.8380282521247864
+    }, {
+      bbox: [x, y, width, height],
+      class: "kite",
+      score: 0.74644153267145157
+    }]
+\end{lstlisting}
+
+https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/README.md
+
+% \subsection{The model - a closer look}
+% \label{section:theModelCloser}
 
 
 \chapter{Application (numerical validation)}
@@ -280,7 +381,10 @@ Statistical validation of the results.
 \section{Data}
 \label{section:data}
 
-Describe the used data.
+COCO refers to the "Common Objects in Context" dataset, the data on which the model was trained on. This collection of images is mostly used for object detection, segmentation, and captioning, and it consists of over 200k labeled images belonging to one of 90 different categories, such as "person," "bus," "zebra," and "tennis racket."
+
+https://mmla.gse.harvard.edu/tools/coco-ssd-object-detector/
+
 
 \section{Results}
 \label{section:results}
@@ -329,7 +433,7 @@ Figure example
 $\ldots$ (see Figure \ref{swarmsize})
 
 \begin{figure}[htbp]
-% 	\centerline{\includegraphics{Fig/FitEvol.eps}}  
+	\centerline{\includegraphics{Fig/FitEvol.eps}}  
 	\caption{The evolution of the swarm size during the GA generations. This results were obtained for the $f_2$ test function with 5 dimensions.}
 	\label{swarmsize}
 \end{figure}
