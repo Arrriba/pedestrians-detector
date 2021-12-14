@@ -34,8 +34,11 @@
 \usepackage{verbatim}
 \usepackage{xcolor}
 \usepackage{listings}
+\usepackage{tabularx}
+
 
 \geometry{a4paper,top=3cm,left=2cm,right=2cm,bottom=3cm}
+\graphicspath{ {./images/} }
 
 \pagestyle{fancy}
 \fancyhf{}
@@ -251,8 +254,9 @@ In order to cite a given work you can use a bib file (see the example) and the $
 
 \chapter{Investigated approach}
 \label{chapter:proposedApproach}
-\section{Motivation}
-\label{section:motivation}
+
+% \section{Motivation}
+% \label{section:motivation}
 
 There are a lot of documented ways of implementing object detection nowadays, and most of them are written in Python. Why is this the most popular language for AI and ML based projects? Because it offers a great library ecosystem. Libraries provide base level items so developers don't have to code them from the beginning every time.
 (https://djangostars.com/blog/why-python-is-good-for-artificial-intelligence-and-machine-learning/)
@@ -271,10 +275,16 @@ TODO
 
 As fast detection is a vital aspect in automotive, and since we are driving towards a real-time experience, an almost instant response would be desirable. 
 
-Reducing the response time as much as
-possible is the main reason for switching to another perspective: TensorFlow for JavaScript. It is designed as a breakthrough for running entirely client-sided machine learning models. And it is exactly what we needed to get rid of the client-server communication overhead, bringing us a few steps closer to real-time detection.
+Reducing the response time as much as possible is the main reason for switching to another perspective: TensorFlow for JavaScript. It is designed as a breakthrough for running entirely client-sided machine learning models. And it is exactly what we needed to get rid of the client-server communication overhead, bringing us a few steps closer to real-time detection. 
 
-TensorFlow.js offers a set of pre-trained models that have been ported from the "pythonic" version of Tensorflow Object Detection API - an open source framework built on top of TensorFlow that makes it easy to construct, train and deploy object detection models. We will be using the object detection model: COCO-SSD. 
+TensorFlow.js offers a set of pre-trained models that have been ported from the "pythonic" version of Tensorflow Object Detection API - an open source framework built on top of TensorFlow that makes it easy to construct, train and deploy object detection models. The documentation (https://github.com/tensorflow/tfjs-models) provides a very clear overview for the utility of each model, by splitting them up in four great categories: 
+\begin{itemize}
+  \item Images
+  \item Audio
+  \item Text
+  \item General Utilities
+\end{itemize}
+Each model also has a short and concise description next to it, along with the installation command. The area of interest for this particular project is related to Images and object detection. After browsing through the models' descriptions we decided that we will be using the object detection model: COCO-SSD, which is a perfect fit for our problem's hypothesis. 
 
 https://github.com/tensorflow/models/blob/master/research/object\textunderscore detection/README.md
 
@@ -353,8 +363,87 @@ The \textbf{output} is an array of objects. An object contains the bounding box 
 
 https://github.com/tensorflow/tfjs-models/blob/master/coco-ssd/README.md
 
-% \subsection{The model - a closer look}
-% \label{section:theModelCloser}
+\section{Third Experiment}
+\label{section:thirdExperiment}
+As also mentioned in the previous section, TensorFlow.js provides a set of pre-trained models. These models are hosted on NPM and unpkg so they can easily be used in any project after an installation step. This is why for our third experiment, we tried to identify other models that could be appropriate for our pedestrians detection use case. As we studied again the models in the Images category, another one seemed to be a good fit for: BodyPix.
+
+\subsection{The Model - overview}
+\label{section:theModelOverview2}
+BodyPix is a person and body part segmentation model built for in browser real-time detection (we will also talk about the drawbacks of using it on mobile). This model can be used to segment an image into pixels that are and are not part of a person, and into pixels that belong to each of twenty-four body parts. It works for multiple people in an input image or video. 
+
+\subsection{Mobile Integration}
+\label{section:mobileIntegration2}
+Similarly, the model can be installed by typing the following command:
+\begin{lstlisting}[language=bash]
+    $ npm install @tensorflow-models/body-pix
+\end{lstlisting}
+It can be used in the project after following the same 3 main steps:
+\begin{enumerate}
+  \item \textbf{import} model
+  \begin{lstlisting}
+    import * as bodyPix from "@tensorflow-models/body-pix";
+  \end{lstlisting}
+  \item \textbf{load} model
+  \begin{lstlisting}
+    const model = await bodyPix.load(/**optional arguments**/);
+  \end{lstlisting}
+  \item \textbf{segment} image
+  \begin{lstlisting}
+    const segmentation = await model.segmentPerson(image, 
+                                    {flipHorizontal: false,
+                                     internalResolution: 'medium',
+                                     segmentationThreshold: 0.7});
+   // other options:
+   //   - model.segmentPersonParts
+   //   - model.segmentMultiPerson
+   //   - model.segmentMultiPersonParts
+  \end{lstlisting}
+\end{enumerate}
+By default, BodyPix \textbf{loads} a MobileNetV1 architecture with a 0.75 multiplier. This is recommended for computers with mid-range/lower-end GPUs. A model with a 0.50 multiplier is recommended for mobile. The ResNet architecture is recommended for computers with even more powerful GPUs.
+
+The developer can also load other versions of the model, by specifying the architecture explicitly in bodyPix.load() using a ModelConfig dictionary with the following possible parameters:
+\begin{itemize}
+    \item \textbf{architecture}: the base model 'ResNet50' or 'MobileNetV1'
+    \item \textbf{outputStride}: 8, 16, 32. Stride values 16, 32 are supported for the ResNet architecture and stride 8, and 16 are supported for the MobileNetV1 architecture. The smaller the value, the larger the output resolution, and more accurate the model at the cost of speed. A larger value results in a smaller model and faster prediction time but lower accuracy.
+    \item \textbf{multiplier}: the float multiplier for the depth (number of channels) for all convolution ops, and can be 1.0, 0.75 or 0.50. Used only by by the MobileNetV1 architecture. The larger the value, the larger the size of the layers, and more accurate the model at the cost of speed. A smaller value results in a smaller model and faster prediction time but lower accuracy.
+    \item \textbf{quantBytes}: the number of bytes per float used for weight quantization, possible options:
+    \begin{itemize}
+        \item 4: (no quantization) highest accuracy and original model size.
+        \item 2: slightly lower accuracy and 2x model size reduction.
+        \item 1: lower accuracy and 4x model size reduction.
+    \end{itemize}
+    \item \textbf{modelUrl}: optional
+\end{itemize}
+The following summary contains the sizes of the models when using different quantization bytes and multipliers:
+
+\begin{center}
+\includegraphics[width=13cm]{images/architectureTable.png}
+\end{center}
+
+
+However, the documentation specifies two recommended configurations for loading the model:
+\begin{itemize}
+    \item ResNet (larger, slower, more accurate):
+
+    \begin{lstlisting}
+    const model = await bodyPix.load({architecture: 'ResNet50',
+                                      outputStride: 32,
+                                      quantBytes: 2});
+
+    \end{lstlisting}
+    \item MobileNet (smaller, faster, less accurate):
+    \begin{lstlisting}
+    const model = await bodyPix.load({architecture: 'MobileNetV1',
+                                      outputStride: 16,
+                                      multiplier: 0.75,
+                                      quantBytes: 2});
+    \end{lstlisting}
+\end{itemize}
+The \textbf{second model} managed to have the fastest prediction in our application: 44 s. This is more than 40 times slower than our second experiment (approx. 1 second per prediction). Based on the table regarding the architecture we have also tried implementing the other configurations without having any success in obtaining a faster prediction (only values with a minimum of 50 seconds). 
+
+
+Undoubtedly, this is the point where our third experiment ended, because of the bad performance in terms of time. A reaction that takes more than 44 seconds for a speeding car could be even more dangerous than a lack of reaction. In other words, we must keep in mind that the faster the answer, the less threatened human lives are, and we want to minimize the risk as much as possible.
+
 
 
 \chapter{Application (numerical validation)}
