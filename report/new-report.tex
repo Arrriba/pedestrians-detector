@@ -237,18 +237,39 @@ Lack of sufficient resources to run the algorithm was an imminent problem that w
 \chapter{State of the art/Related work}
 \label{chapter:stateOfArt}
 
+In this chapter we present a few methods that were used for pedestrian detection in different contexts. In order to provide safety and to reduce traffic accidents driving assistance systems have been developed with the help of artificial intelligence and ones of the features are pedestrian detectors and driving assistants.
 
-The theory of the methods utilised until now in order to solve the given problem.
-
-Answer the following questions for each piece of related work that addresses the same or a similar problem. 
+Firstly, we will take a look at "Traffic signs recognition for driving assistance" (add link to bibliography) by Yatham Sai Sangram Reddy, Devareddy Karthik, Nikunj Rana, M Jasmine Pemeena Priyadarsini, G K Rajini
+and Shaik Naseera.
 \begin{itemize}
-	\item What is their problem and method? 
-	\item How is your problem and method different? 
-	\item Why is your problem and method better?
+	\item What is their problem and method?
+	
+	Problem: The paper proposes a method to detect the traffic sign board in a frame and to identify the sign on it. 
+	
+	Used algorithm: HAAR Cascade Training - Viola Jones Algorithm for detecting differences in pixel intensities.
+	\item How is our problem and method different? 
+	
+	Our problem is a little bit different than the one from the mentioned paper, because we try to detect people that are present in certain picture. At the same time, they mention using real-time camera system. The implementation is also done differently, since we are using COCO-SSD for object detection, while their implementation was done by training a cascade classifier for head detection from the scene, by using HAAR features through OpenCV.
+	\item DataSets: Each of the Traffic signs is recognised using a database of images of numbers and symbols used to train the KNN classifier using OpenCV libraries. The images are split into positives (containing the target road sign) and negatives (containing background). For each positive image an annotation file is created, and then a vector (.vec) file for all of them.
+	\item Results: For the traffic signs with single contours, the nearest neighbour is found and the output is the response returned by the classifier. For the traffic signs with multiple contours, the responses returned by the classifier are sorted based on their x-positions after the
+    nearest neighbours are found. The authors do not offer an aggregated result in terms of accuracy or detection rate of their algorithm. Some sample outputs are presented, though, and they look like: "Sign Board: School Zone", "Speed limit: 50 km/h" etc. The algorithm works directly on frames captured from the camera and presents satisfactory results.
+    
 \end{itemize}
 
-In order to cite a given work you can use a bib file (see the example) and the $\ $ \textit{cite} command:
-\cite{kennedy1}, \cite{Koh06}, \cite{Berlekamp82}, \cite{Storn95}, \cite{firefox}.
+    Next, we will take a look at "Driving situation-based real-time interaction with intelligent driving assistance agent" (add link to bibliography) by Young-Hoon Nho.
+    \begin{itemize}
+	\item What is their problem and method?
+	
+	Problem: The article presents an intelligent driving assistance agent that interacts with the driver in real time. Different driving situations are recognized by the algorithm, such as speed bump, corner, crowded area, uphill, downhill, straight, parking space. The algorithm combines driving intention recognition with driving situation information, that is automatically tagged as the vehicle is driven, to build a long-term interaction model.
+	
+	Used algorithm: They use an algorithm based on hidden Markov models (HMMs).
+	\item How is our problem and method different? 
+	
+	Our problem is a little bit different than the one from the mentioned paper, because we try to detect people that are present in certain picture. At the same time, they mention using real-time camera system. The implementation is also done differently, since we are using COCO-SSD for object detection, while their implementation was done by using an algorithm based on hidden Markov models.
+	\item DataSets: The acquisition of data was done in intervals, while driving a Kia Morning vehicle, using on-board diagnostics 2 (OBD2). The data collected included: steering wheel data, velocity and accelerator pedal data, latitude and longitude as serial data. 430 data inputs were obtained, each of them being labeled by one of the 7 driving situations considered.
+	\item Results: The results they obtained with this approach is 94.9% accuracy, more specifically - 408 our of 430 correctly recognized inputs.
+    
+\end{itemize}
 
 
 
@@ -268,7 +289,11 @@ TensorFlow is a free and open-source library for machine learning and artificial
 
 We first started by implementing a mobile application with a regular client-server model. The server was written in Python with a Flask RESTful API. The client side is implemented in React Native and has to send the photo to the server and then wait for the detection. 
 
-TODO
+The YOLOv3 pre-trained model we have decided to use comes with vehicle, persons and road sign detection out of the box, so we only need to fine-tune it to fit the specific needs of our application and optimize its performance for our problem.
+
+The way we will measure the quality of the detection is by tracking the overall accuracy and trying to maximize the number of successful detections, at the same time reducing the number of false positives. Another aspect that we considered of tremendous importance is the speed of the algorithm, since we are striving for a pleasant user experience and are driving towards a real-time experience,
+we believe an almost instant response would be desirable, so reducing the response time as much as possible was another factor that we looked at in our work.
+
 
 \section{Second Experiment}
 \label{section:secondExperiment}
@@ -445,16 +470,9 @@ The \textbf{second model} managed to have the fastest prediction in our applicat
 Undoubtedly, this is the point where our third experiment ended, because of the bad performance in terms of time. A reaction that takes more than 44 seconds for a speeding car could be even more dangerous than a lack of reaction. In other words, we must keep in mind that the faster the answer, the less threatened human lives are, and we want to minimize the risk as much as possible.
 
 
-
 \chapter{Application (numerical validation)}
 \label{chapter:application}
 
-
-Explain the experimental methodology and the numerical results obtained with your approach and the state of art approache(s).
-
-Try to perform a comparison of several approaches.
-
-Statistical validation of the results.
 
 
 \section{Methodology}
@@ -462,21 +480,69 @@ Statistical validation of the results.
 
 \begin{itemize}
 	\item What are criteria you are using to evaluate your method? 
-	\item What specific hypotheses does your experiment test? Describe the experimental methodology that you used. 
+	
+	Since our approach is based on the pre-trained version of the COCO-SSD model, we performed our experiments having in mind three aspects: 
+	
+    - accuracy
+    
+    - runtime (time for processing)
+    
+    - feasibility of our application in the context of driving assistance field
+    
+    The reason behind this was to balance these three.
+	\item What specific hypotheses does your experiment test? 
+	
+	Due to the COCO-SSD model being very general,it is less likely to break down when applied to new domains or unexpected inputs. As a result, we can assume that the model will perform well on our task of detecting pedestrians, vehicles and other participants to the traffic. Starting with this assumption, our aim is to identify how well we can apply these existing algorithms of pre-trained model to a known objects detection problem in order to integrate in an application that provides driving assistance support.
 	\item What are the dependent and independent variables? 
-	\item What is the training/test data that was used, and why is it realistic or interesting? Exactly what performance data did you collect and how are you presenting and analyzing it? Comparisons to competing methods that address the same problem are particularly useful.
+	
+	Independent variables: Pre-trained model, System environment
+	Dependent variables: DataSets, program output
+	
+	\item What is the training/test data that was used, and why is it realistic or interesting? 
+	
+	Our dataset contains real time images taken from in-motion video footage, making up for a very realistic experience, perfectly tailored to a real time driving assistant application.
+	
 \end{itemize}
 
 \section{Data}
 \label{section:data}
 
+For the dataset, we selected some subsets from the COCO datasets. We will dive in details below.
+
 COCO refers to the "Common Objects in Context" dataset, the data on which the model was trained on. This collection of images is mostly used for object detection, segmentation, and captioning, and it consists of over 200k labeled images belonging to one of 90 different categories, such as "person," "bus," "zebra," and "tennis racket."
+
+Features of the COCO dataset
+
+    - Object segmentation with detailed instance annotations
+    
+    - Recognition in context
+    
+    - Superpixel stuff segmentation
+    
+    - Over 200’000 images of the total 330’000 images are labeled
+    
+    - 1.5 Mio object instances
+    
+    - 80 object categories, the “COCO classes”, which include “things” for which individual instances may be easily labeled (person, car, chair, etc.)
+    
+    - 91 stuff categories, where “COCO stuff” includes materials and objects with no clear boundaries (sky, street, grass, etc.) that provide significant contextual information.
+    
+    - 5 captions per image
+    
+    - 250’000 people with 17 different keypoints, popularly used for Pose Estimation
+
 
 https://mmla.gse.harvard.edu/tools/coco-ssd-object-detector/
 
 
 \section{Results}
 \label{section:results}
+
+Each algorithmically generated result, such as an object bounding box or segment, is stored separately in its own result struct. This singleton result struct must contains the id of the image from which the result was generated (a single image will typically have multiple associated results). Results for the whole dataset are aggregated in a single array. Finally, this entire result struct array is stored to disk as a single JSON file.
+
+Our initial intuition was to take a look at the original benchmark of the author of COCO-SSD algorithm which was completed on the COCO dataset and was run on a Pascal Titan X. The COCO-SSD algorithm itself has multiple versions that are suited for specific usecases.
+
+For the metrics used in comparison, we focused on AP (Average precision) which is a popular metric in measuring the accuracy of object detectors like Faster R-CNN, SSD, etc. Average precision computes the average precision value for recall value over 0 to 1. 
 
 Present the quantitative results of your experiments. Graphical data presentation such as graphs and histograms are frequently better than tables. What are the basic differences revealed in the data. Are they statistically significant?
 
@@ -488,7 +554,6 @@ Present the quantitative results of your experiments. Graphical data presentatio
 	\item What conclusions do the results support about the strengths and weaknesses of your method compared to other methods? 
 	\item How can the results be explained in terms of the underlying properties of the algorithm and/or the data. 
 \end{itemize}
-
 
 
 \chapter{Conclusion and future work}
