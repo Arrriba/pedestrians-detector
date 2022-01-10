@@ -362,7 +362,7 @@ The \textbf{base} attribute controls the base CNN model, which can be one of the
 \begin{itemize}
   \item 'mobilenet\textunderscore v1' 
   \item 'mobilenet\textunderscore v2' - has the highest classification accuracy
-  \item 'lite\textunderscore mobilenet\textunderscore v1' - \textit{default}, is the smallest in size and the fastest in inference speed. Since we are keen on achieving the fastest possible results, we will be using this as the base model.
+  \item 'lite\textunderscore mobilenet\textunderscore v2' - \textit{default}, is the smallest in size and the fastest in inference speed. Since we are keen on achieving the fastest possible results, we will be using this as the base model.
 \end{itemize}
 
 For the \textbf{detection} part, we are passing as a parameter the image converted to a Tensor. A Tensor is a container which can hold data in multiple dimensions. This method can also receive the image in different shapes, such as html elements: ImageData, HTMLImageElement, HTMLCanvasElement, HTMLVideoElement. It provides two more optional parameters: maxNumBoxes and minScore. Thus, the \textbf{detect} function can have the following arguments:
@@ -544,7 +544,116 @@ Our initial intuition was to take a look at the original benchmark of the author
 
 For the metrics used in comparison, we focused on AP (Average precision) which is a popular metric in measuring the accuracy of object detectors like Faster R-CNN, SSD, etc. Average precision computes the average precision value for recall value over 0 to 1. 
 
-Present the quantitative results of your experiments. Graphical data presentation such as graphs and histograms are frequently better than tables. What are the basic differences revealed in the data. Are they statistically significant?
+\subsection{Results for YOLOv3}
+\label{subsection:results}
+
+We present the results for the YOLOv3 using COCO dataset in the following figure:
+\begin{center}
+\includegraphics[width=16cm]{images/speed_yolo.PNG}   
+Figure 5.3.1.1 Algorithm output for COCO dataset
+\end{center}
+\begin{center}
+\includegraphics[width=16cm]{images/average precision yolo.PNG} 
+Figure 5.3.1.2 Average precision for YOLOv3
+\end{center}
+
+Output images samples produced with YOLOv3:
+\begin{center}
+\includegraphics[width=8cm]{images/image1.png}   
+\includegraphics[width=8cm]{images/image1_label.PNG}
+Figure 5.3.1.3 Output image sample for YOLOv3 1
+\end{center}
+\begin{center}
+\includegraphics[width=8cm]{images/image2.jpg}   
+\includegraphics[width=8cm]{images/image2_label.PNG}
+Figure 5.3.1.4 Output image sample for YOLOv3 2
+\end{center}
+\begin{center}
+\includegraphics[width=8cm]{images/image3.png}   
+\includegraphics[width=8cm]{images/image3_label.PNG}
+Figure 5.3.1.5 Output image sample for YOLOv3 3
+\end{center}
+\begin{center}
+\includegraphics[width=8cm]{images/image4.jpg}   
+\includegraphics[width=8cm]{images/image4_label.PNG}
+Figure 5.3.1.6 Output image sample for YOLOv3 4
+\end{center}
+
+ We observe that in general, the algorithm produces very good results and detects most of the pedestrians, vehicles and obstacles.
+However, just like in the case of the smaller dataset, we notice the darker images will have a significantly lower precision than bright images (notice how in the Figure 5.3.1.6, the car is not detected and also some persons are not detected).
+
+As s strong point for the algorithm, we could say that it manages to successfully tell apart trucks and larger vehicles of normal sized cars, and that means we can easily warn the driver of some imminent collision with a large vehicle to avoid an accident. (Figure 5.3.1.5)
+
+\subsection{Results for COCO SSD in comparison with other models}
+\label{subsection:results_coco}
+
+TensorFlow 2 provides a collection of detection models pre-trained on the COCO 2017 dataset. The one we are using for mobile object detection has the following results:
+
+\begin{center}
+\begin{tabular}{||c c c c||} 
+ \hline
+ Model name & Speed (ms) & COCO mAP & Outputs \\ [0.5ex] 
+ \hline\hline
+ SSD MobileNet V2 FPNLite 320x320 & 22 & 22.2 & Boxes \\ 
+ \hline
+\end{tabular}
+\end{center}
+\begin{center}
+Figure 5.3.2.1 Results on COCO dataset
+\end{center}
+
+https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf2_detection_zoo.md
+
+
+Why have we chosen this backbone for our object detector? We believe that the crucial question is not the classical one regarding which detector is the best, as this might not be possible to answer. Instead, we are looking for the best balance between speed and accuracy that our problem needs.  
+
+https://arxiv.org/pdf/1611.10012.pdf
+A report conducted by Google Research offers a survey paper to study the tradeoff between \textbf{speed and accuracy} for Faster R-CNN, R-FCN, and SSD. The results show that SSD on MobileNet has the highest mAP among the models targeted for real-time processing, as Figure 5.3.2.2 shows:
+\begin{center}
+\includegraphics[width=17cm]{images/googleResearch.png}
+Figure 5.3.2.2 mAP for Faster R-CNN, R-FCN, and SSD
+\end{center}
+
+On the other hand, since we are giving the model images as input, we should also refer to the \textbf{object size} when measuring the performance. For large objects, SSD performs pretty well even with a simple extractor. SSD can even match other detectors' accuracy using better extractor. But SSD performs much worse on small objects comparing to other methods. The following example is a screenshot from our application showing that no objects were detected by COCO SSD in a blurry picture with smaller objects, while, in our previous experiment, the objects were successfully detected by YOLO:
+
+\begin{center}
+\includegraphics[width=8cm]{images/screenshot1.jpg}\\   
+Figure 5.3.2.3 Output from COCO SSD for blurry, small objects
+\break
+\break
+\includegraphics[width=8cm]{images/image4_label.PNG} \\
+Figure 5.3.2.4 Output from YOLOv3 for blurry, small objects
+\end{center}
+
+At the same time, COCO SSD outperforms YOLOv3 in terms of \textbf{time}. Our application is designed to run on mobile, therefore it is not possible to store the model on the device, it needs to be accessed through an endpoint (REST server in our first experiment). For a clearer understanding of the matter, we propose a step by step list describing the process for running each of the two methods. \\
+In order to make a prediction using YOLOv3, the following steps have to be pursued:
+\begin{enumerate}
+    \item rescale the image
+    \item send it to the server
+    \item decode the image
+    \item run prediction
+    \item encode the image
+    \item send prediction response
+\end{enumerate}
+All these steps turned out to be very time consuming, as they all add a lot of overhead to the prediction task. Not to mention the cold start issue - when no request has been made to the server and the model is not loaded yet, loading it will take a few more seconds before running the actual prediction.
+\\
+In order to make the prediction using COCO SSD, TensorFlowJS is the fastest choice for mobile. The model is loaded once the app is first accessed, with no need for making a request for getting the predictions. Thus, the steps are:
+\begin{enumerate}
+    \item convert the image to string
+    \item convert to tensor
+    \item get prediction
+\end{enumerate}
+The pipeline is run on the client side entirely, with no other exhaustive and time consuming side tasks. Here are a couple of examples from after running COCO SSD on the mobile application:
+\begin{center}
+\includegraphics[width=7cm]{images/screenshot2.jpg}\\
+Figure 5.3.2.5 COCO SSD prediction time example 1 - \textbf{COCO SSD: 1.4 (s) | YOLOv3: 5.32 (s)}
+\break
+\break
+\includegraphics[width=7cm]{images/screenshot3.jpg}\\ 
+Figure 5.3.2.6 COCO SSD prediction time example 2 - \textbf{COCO SSD: 1.2 (s) | YOLOv3: 4.7 (s)}
+\end{center}
+In the picture above (Figure 5.3.2.6), a very good result and also great performance from COCO SSD can easily be observed. The objects that are smaller have also successfully been detected here, as they are not blurry anymore (as in Figure 5.3.2.3). Moreover, the time difference between COCO SSD prediction using TensorFlowJS and YOLOv3 using a Python Flask REST server is huge - 4x the number of seconds that the SSD needs for the second option to get to the results. More details regarding the actual value of a millisecond in the context of driving will be described in the next section. 
+
 
 \section{Discussion}
 \label{section:discussion}
@@ -552,6 +661,7 @@ Present the quantitative results of your experiments. Graphical data presentatio
 \begin{itemize}
 	\item Is your hypothesis supported? 
 	\item What conclusions do the results support about the strengths and weaknesses of your method compared to other methods? 
+	At the first sight, the general impression is that YOLO is better than a SSD model. But we have to define what does actually better mean 
 	\item How can the results be explained in terms of the underlying properties of the algorithm and/or the data. 
 \end{itemize}
 
