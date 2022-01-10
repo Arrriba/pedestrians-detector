@@ -20,13 +20,14 @@ import * as ImageManipulator from "expo-image-manipulator";
 
 import * as FileSystem from 'expo-file-system';
 import cameraIcon from './assets/camera.png';
-// import { Text, View } from "../components/Themed";
 
-export default function App4() {
+export default function MainPage() {
   const [isTfReady, setIsTfReady] = useState(false);
   const [isModelReady, setIsModelReady] = useState(false);
   const [predictions, setPredictions] = useState(null);
   const [imageToAnalyze, setImageToAnalyze] = useState(null);
+  const [duration, setDuration] = useState(null);
+
   const model = useRef(null);
 
   useEffect(() => {
@@ -78,6 +79,8 @@ export default function App4() {
   };
 
   const detectObjectsAsync = async (source) => {
+    let startTimeM = new Date().getTime()
+
     try {
       const imageAssetPath = Image.resolveAssetSource(source);
       console.log(imageAssetPath)
@@ -89,6 +92,8 @@ export default function App4() {
     const imgBuffer = tf.util.encodeString(imgB64, 'base64').buffer;
     const imageTensor = imageToTensor(imgBuffer);
       const newPredictions = await model.current.detect(imageTensor);
+      let durationM = (new Date().getTime() - startTimeM)/1000
+      setDuration(durationM)
       setPredictions(newPredictions);
       console.log("=== Detect objects predictions: ===");
       console.log(newPredictions);
@@ -205,7 +210,6 @@ export default function App4() {
                       />
                     );
                   })}
-
                 <View
                   style={{
                     zIndex: 0,
@@ -241,7 +245,13 @@ export default function App4() {
             )}
             {isModelReady &&
               predictions &&
-              predictions.map((p, index) => {
+              <View>
+                 <Text
+                    style={{ ...styles.text, color: 'black' }}
+                  >
+                    Time: {duration}
+                  </Text>
+              {predictions.map((p, index) => {
                 return (
                   <Text
                     key={index}
@@ -251,6 +261,8 @@ export default function App4() {
                   </Text>
                 );
               })}
+                </View>
+              }
           </View>
         </View>
       </ScrollView>

@@ -1,7 +1,6 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import App4 from './App4'
+import MainPage from './MainPage'
 import { LogBox } from 'react-native';
 
 // Ignore log notification by message
@@ -9,19 +8,10 @@ LogBox.ignoreLogs(['tf.nonMaxSuppression() in webgl locks the UI thread. Call tf
 export default function App() {
   return (
     <View style={styles.container}>
-    <App4/>
+    <MainPage/>
     </View>
   );
 }
-
-// export default function App() {
-//   return (
-//     <View style={styles.container}>
-//       <Text>Open up App.js to start working on your app!</Text>
-//       <StatusBar style="auto" />
-//     </View>
-//   );
-// }
 
 const styles = StyleSheet.create({
   container: {

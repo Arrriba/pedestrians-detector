@@ -21,6 +21,11 @@
   <component name="ChangeListManager">
     <list default="true" id="7a92b382-3f0e-4eed-a107-39e0a263bd1e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend2/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend2/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend2/App2.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend2/App3.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend2/App4.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend2/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend2/package-lock.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,6 +42,9 @@
     <ignored-facets>
       <facet id="backend/invalid/Python" />
     </ignored-facets>
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectCodeStyleSettingsMigration">
     <option name="version" value="1" />
@@ -164,7 +172,6 @@
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
     <state x="548" y="167" key="FileChooserDialogImpl" timestamp="1635589742611">
